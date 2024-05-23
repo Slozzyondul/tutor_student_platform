@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "152102935057",
+    "project_id": "tutor-student-platform",
+    "storage_bucket": "tutor-student-platform.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152102935057:android:560ebed1a0cf05fb5eafb0",
+        "android_client_info": {
+          "package_name": "com.example.tutor_student_platform"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtFBdBGkl_K-2i2qnvVyOfxnQOVef9E6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

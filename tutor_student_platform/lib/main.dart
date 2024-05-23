@@ -1,6 +1,24 @@
+import 'package:firebase_core_dart/firebase_core_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+      apiKey: 'AIzaSyAMvJdd0aNS8RO5ViMNocnzmngPmFxvWCA',
+      appId: '1:152102935057:web:0bc86f8c6059d96e5eafb0',
+      messagingSenderId: '152102935057',
+      projectId: 'tutor-student-platform',
+      authDomain: 'tutor-student-platform.firebaseapp.com',
+      storageBucket: 'tutor-student-platform.appspot.com',
+      databaseURL: 'https://tutor-student-platform.firebaseio.com',
+    ));
+  } else {
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 

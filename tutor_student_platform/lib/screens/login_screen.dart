@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tutor_student_platform/screens/signup_screen.dart';
-import 'package:tutor_student_platform/screens/reset_password_screen.dart';
+import 'package:flutter/material.dart';
+import 'tutor_profile_setup_screen.dart';
+import 'student_profile_setup_screen.dart';
+import 'tutor_profile_view_screen.dart';
+import 'browse_tutors_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,85 +11,85 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email = '', _password = '';
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void _login() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      try {
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: _email,
-          password: _password,
-        );
-        // Navigate to the home screen
-      } catch (e) {
-        print(e);
-        // Show error message
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Navigate to the appropriate profile setup screen based on user type
+      String userId = userCredential.user!.uid;
+      bool isNewUser = userCredential.additionalUserInfo!.isNewUser;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => isNewUser
+              ? TutorProfileSetupScreen(userId: userId)
+              : TutorProfileViewScreen(userId: userId),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase specific exceptions
+      if (e.code == 'user-not-found') {
+        _showError('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        _showError('Wrong password provided for that user.');
+      } else {
+        _showError(e.message!);
       }
+    } catch (e) {
+      // Handle other exceptions
+      _showError('An error occurred. Please try again.');
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _email = value!,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _password = value!,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _login,
-                child: Text('Login'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ResetPasswordScreen()),
-                  );
-                },
-                child: Text('Forgot Password?'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
-                  );
-                },
-                child: Text('Sign Up'),
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: _login,
+              child: Text('Login'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BrowseTutorsScreen(),
+                  ),
+                );
+              },
+              child: Text('Browse Tutors'),
+            ),
+          ],
         ),
       ),
     );

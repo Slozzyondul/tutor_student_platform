@@ -1,42 +1,45 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'screens/login_screen.dart';
+import 'screens/tutor_profile_setup_screen.dart';
+import 'screens/student_profile_setup_screen.dart';
+import 'screens/tutor_profile_view_screen.dart';
+import 'screens/browse_tutors_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: 'AIzaSyAMvJdd0aNS8RO5ViMNocnzmngPmFxvWCA',
-        appId: '1:152102935057:web:0bc86f8c6059d96e5eafb0',
-        messagingSenderId: '152102935057',
-        projectId: 'tutor-student-platform',
-        authDomain: 'tutor-student-platform.firebaseapp.com',
-        storageBucket: 'tutor-student-platform.appspot.com',
-        databaseURL: 'https://tutor-student-platform.firebaseio.com',
-      ),
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
-
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyAMvJdd0aNS8RO5ViMNocnzmngPmFxvWCA",
+      authDomain: "tutor-student-platform.firebaseapp.com",
+      projectId: "tutor-student-platform",
+      storageBucket: "tutor-student-platform.appspot.com",
+      messagingSenderId: "152102935057",
+      appId: "1:152102935057:web:0bc86f8c6059d96e5eafb0",
+    ),
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tutor Student Platform',
       theme: ThemeData(
-        primarySwatch: Colors.yellow,
+        primarySwatch: Colors.blue,
       ),
-      home: LoginScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => LoginScreen(),
+        '/tutorProfileSetup': (context) => TutorProfileSetupScreen(
+            userId: ModalRoute.of(context)!.settings.arguments as String),
+        '/studentProfileSetup': (context) => StudentProfileSetupScreen(
+            userId: ModalRoute.of(context)!.settings.arguments as String),
+        '/tutorProfileView': (context) => TutorProfileViewScreen(
+            userId: ModalRoute.of(context)!.settings.arguments as String),
+        '/browseTutors': (context) => BrowseTutorsScreen(),
+      },
     );
   }
 }
